@@ -1,0 +1,4 @@
+[Sun Dec 17 17:40:47.356130 2017] [ssl:warn] [pid 1] AH01906: docker-contao.local:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Sun Dec 17 17:40:47.362931 2017] [ssl:warn] [pid 1] AH01906: docker-contao.local:443:0 server certificate is a CA certificate (BasicConstraints: CA == TRUE !?)
+[Sun Dec 17 18:51:18.623475 2017] [autoindex:error] [pid 32] [client 172.21.0.2:35878] AH01276: Cannot serve directory /app/web/: No matching DirectoryIndex (index.php,index.html) found, and server-generated directory index forbidden by Options directive
+[Sun Dec 17 18:51:20.582974 2017] [autoindex:error] [pid 9] [client 172.21.0.2:35882] AH01276: Cannot serve directory /app/web/: No matching DirectoryIndex (index.php,index.html) found, and server-generated directory index forbidden by Options directive

@@ -1,0 +1,70 @@
+version: '3'
+services:
+  apache:
+    container_name: docker-contao-apache
+    build:
+      context: ./build/apache
+      dockerfile: Dockerfile
+      args:
+        - APACHE_USER_ID=${DOCKER_ENV_USER_ID}
+        - APACHE_GROUP_ID=${DOCKER_ENV_USER_ID}
+    environment:
+      - APACHE_VHOST=docker-contao.local
+      - APACHE_DOCUMENT_ROOT=/app/web
+      - VIRTUAL_HOST=docker-contao.local
+      - VIRTUAL_NETWORK=nginx-proxy-network
+      - VIRTUAL_PROTO=https
+      - VIRTUAL_PORT=443
+    networks:
+      - nginx-proxy-network
+      - docker-contao-network
+    depends_on:
+      - php-fpm
+      - mariadb
+    volumes:
+      - ./source:/app
+      - ./data/logs/apache:/var/log/apache2
+      - ${DOCKER_ENV_CERT_PATH}:/etc/ssl/certs:ro
+
+  mariadb:
+    container_name: docker-contao-mariadb
+    build:
+      context: ./build/mariadb
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_USER_ID=${DOCKER_ENV_USER_ID}
+        - MYSQL_GROUP_ID=${DOCKER_ENV_GROUP_ID}
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=contao-user
+      - MYSQL_PASSWORD=contao-user
+      - MYSQL_DATABASE=docker_contao
+    networks:
+      - docker-contao-network
+    volumes:
+      - ./data/mariadb:/var/lib/mysql
+
+  php-fpm:
+    container_name: docker-contao-php-fpm-7.1
+    build:
+      context: ./build/php-fpm-7.1
+      dockerfile: Dockerfile
+      args:
+        - PHP_USER_ID=${DOCKER_ENV_USER_ID}
+        - PHP_GROUP_ID=${DOCKER_ENV_USER_ID}
+    networks:
+      - docker-contao-network
+    volumes:
+      - ./source:/app
+      - ./data/logs/php:/var/log/php
+    environment:
+      - PHP_XDEBUG_REMOTE_HOST=10.0.75.1
+      - PHP_XDEBUG_IDE_KEY=docker-xdebug
+      - PHP_XDEBUG_REMOTE_PORT=9001
+      - PHP_XDEBUG_REMOTE_ENABLE=1
+
+networks:
+  nginx-proxy-network:
+    external: true
+  docker-contao-network:
+    driver: bridge
